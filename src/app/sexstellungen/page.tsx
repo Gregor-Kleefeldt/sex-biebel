@@ -44,6 +44,23 @@ export default function SexstellungenPage() {
           Alle Stellungen im Überblick – filtere nach Kategorie, Schwierigkeit und
           Level. Status und Favoriten werden lokal auf diesem Gerät gespeichert.
         </p>
+        <div className="mt-6 rounded-2xl border border-primary-200/80 bg-gradient-to-r from-primary-50 to-accent-50/60 p-5 shadow-sm sm:flex sm:items-center sm:justify-between sm:gap-6">
+          <div>
+            <p className="text-sm font-semibold text-slate-900">
+              Neu: Stellungs-Generator
+            </p>
+            <p className="mt-1 max-w-xl text-sm text-slate-600">
+              Drei passende Ideen nach Stimmung, Zeit, Ort und Erfahrung – ohne
+              endloses Scrollen.
+            </p>
+          </div>
+          <Link
+            href="/sexstellungen/generator"
+            className="mt-4 inline-flex shrink-0 items-center justify-center rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-700 sm:mt-0"
+          >
+            Zum Generator
+          </Link>
+        </div>
       </header>
 
       <div className="mb-2">

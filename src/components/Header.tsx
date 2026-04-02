@@ -21,6 +21,12 @@ export function Header() {
             Entdecken
           </Link>
           <Link
+            href="/sexstellungen/generator"
+            className="text-sm font-medium text-primary-700 hover:text-primary-800"
+          >
+            Generator
+          </Link>
+          <Link
             href="/blog"
             className="text-sm font-medium text-slate-600 hover:text-primary-600"
           >

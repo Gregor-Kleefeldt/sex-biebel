@@ -32,7 +32,11 @@ export type AnalyticsEventName =
   | "onboarding_started"
   | "onboarding_dismissed"
   | "onboarding_completed"
-  | "xp_milestone_reached";
+  | "xp_milestone_reached"
+  | "generator_opened"
+  | "generator_filters_applied"
+  | "generator_results_shown"
+  | "generator_result_opened";
 
 export type AnalyticsPayload = Record<string, string | number | boolean | null>;
 

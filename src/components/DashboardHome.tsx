@@ -173,6 +173,12 @@ export function DashboardHome() {
                 Jetzt entdecken
               </Link>
               <Link
+                href="/sexstellungen/generator"
+                className="rounded-xl border border-primary-200 bg-primary-50 px-6 py-3 text-center font-medium text-primary-900 transition-colors hover:bg-primary-100"
+              >
+                Stellungs-Generator
+              </Link>
+              <Link
                 href="/sexstellungen/fuer-anfaenger"
                 className="rounded-xl border border-slate-300 bg-white px-6 py-3 text-center font-medium text-slate-700 transition-colors hover:bg-slate-50"
               >
