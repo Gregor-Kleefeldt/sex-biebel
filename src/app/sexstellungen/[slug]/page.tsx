@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PositionCard } from "@/components/PositionCard";
+import { PositionDetailActions } from "@/components/PositionDetailActions";
 import { CategoryPage } from "@/components/CategoryPage";
 import {
   getPositionBySlug,
@@ -348,7 +349,10 @@ export default async function SexstellungenSlugPage({
             <DifficultyBadge difficulty={position.difficulty} />
           </div>
           <EignungChips position={position} />
+          <p className="mt-4 text-base text-slate-600">{position.shortDescription}</p>
         </header>
+
+        <PositionDetailActions position={position} />
 
         <div className="prose prose-slate max-w-none">
           <p className="text-lg text-slate-600">{position.description}</p>

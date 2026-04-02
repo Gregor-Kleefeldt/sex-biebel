@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PositionGrid } from "@/components/PositionGrid";
+import { ExploreCatalog } from "@/components/ExploreCatalog";
 import { positions } from "@/data/positions";
 import { categories } from "@/data/categories";
 import { longTailLandingPages } from "@/data/longTailPages";
@@ -15,9 +15,9 @@ const categoryOrder: CategorySlug[] = [
 ];
 
 export const metadata = {
-  title: "Sexstellungen – Alle Stellungen im Überblick",
+  title: "Entdecken – Stellungen & Filter",
   description:
-    "Entdecke unsere Sammlung von Sexstellungen. Von klassisch bis fortgeschritten – mit Tipps für Anfänger und erfahrene Paare.",
+    "Stöbere durch Stellungen, filtere nach Kategorie und Schwierigkeit und markiere Favoriten und erledigte Übungen.",
 };
 
 export default function SexstellungenPage() {
@@ -32,17 +32,17 @@ export default function SexstellungenPage() {
             </Link>
           </li>
           <li>/</li>
-          <li className="text-slate-700 font-medium">Sexstellungen</li>
+          <li className="text-slate-700 font-medium">Entdecken</li>
         </ol>
       </nav>
 
       <header className="mb-12">
         <h1 className="mb-4 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          Sexstellungen Datenbank
+          Entdecken
         </h1>
         <p className="max-w-2xl text-lg text-slate-600">
-          Alle Stellungen im Überblick. Wähle eine Kategorie oder stöbere durch
-          die vollständige Sammlung.
+          Alle Stellungen im Überblick – filtere nach Kategorie, Schwierigkeit und
+          Level. Status und Favoriten werden lokal auf diesem Gerät gespeichert.
         </p>
       </header>
 
@@ -59,13 +59,14 @@ export default function SexstellungenPage() {
         ))}
       </div>
 
-      <section className="mb-12 rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
-        <h2 className="text-lg font-semibold text-slate-900">
-          Spezifische Guides (Long-Tail)
-        </h2>
+      <ExploreCatalog positions={positions} />
+
+      <details className="mb-12 rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
+        <summary className="cursor-pointer text-lg font-semibold text-slate-900">
+          Weitere Themen-Guides (Long-Tail)
+        </summary>
         <p className="mt-2 max-w-2xl text-sm text-slate-600">
-          Konkrete Fragen – kuratierte Listen mit kurzer Einordnung. Gut für
-          längere Suchphrasen und interne Verlinkung.
+          Kuratierte Zusatzseiten – optional, für vertiefende Fragen.
         </p>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {longTailLandingPages.map((page) => (
@@ -79,10 +80,7 @@ export default function SexstellungenPage() {
             </li>
           ))}
         </ul>
-      </section>
-
-      {/* All Positions */}
-      <PositionGrid positions={positions} />
+      </details>
     </div>
   );
 }

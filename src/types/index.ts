@@ -45,8 +45,24 @@ export type CategorySlug =
   | "fortgeschritten"
   | "wenig-beweglichkeit";
 
+/** Unlock tier for the app (higher tiers need more XP). */
+export type AppLevel = 1 | 2 | 3;
+
+/** Gamification / catalog fields (MVP). */
+export interface PositionAppMeta {
+  shortDescription: string;
+  level: AppLevel;
+  xpReward: number;
+  unlockedByDefault: boolean;
+  tags: string[];
+  /** 1 = wenig, 3 = sehr viel (optional, fürs Filtern). */
+  flexibility?: 1 | 2 | 3;
+  /** 1 = wenig, 3 = sehr viel (optional). */
+  stamina?: 1 | 2 | 3;
+}
+
 // Single sex position data structure
-export interface Position {
+export interface Position extends PositionAppMeta {
   slug: string;
   name: string;
   difficulty: Difficulty;
@@ -63,6 +79,9 @@ export interface Position {
   varianten?: VariantenEintrag[];
   verwandteInhalte?: VerwandterInhalt[];
 }
+
+/** Position content without app meta (merged in `positions` export). */
+export type PositionBase = Omit<Position, keyof PositionAppMeta>;
 
 // Blog article data structure
 export interface BlogArticle {

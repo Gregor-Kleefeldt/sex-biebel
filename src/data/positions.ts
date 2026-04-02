@@ -1,7 +1,8 @@
-import type { Position } from "@/types";
+import type { Position, PositionBase } from "@/types";
+import { POSITION_APP_META } from "./positionAppMeta";
 
 // All sex positions data - educational content in German
-export const positions: Position[] = [
+const positionsBase: PositionBase[] = [
   {
     slug: "missionarsstellung",
     name: "Missionarsstellung",
@@ -505,3 +506,11 @@ export const positions: Position[] = [
     ],
   },
 ];
+
+export const positions: Position[] = positionsBase.map((p) => {
+  const meta = POSITION_APP_META[p.slug];
+  if (!meta) {
+    throw new Error(`Missing POSITION_APP_META for slug: ${p.slug}`);
+  }
+  return { ...p, ...meta };
+});

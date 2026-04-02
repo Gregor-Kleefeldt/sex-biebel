@@ -13,12 +13,12 @@ export function Header() {
         </Link>
 
         {/* Navigation */}
-        <nav className="flex items-center gap-6" aria-label="Hauptnavigation">
+        <nav className="flex flex-wrap items-center gap-4 sm:gap-6" aria-label="Hauptnavigation">
           <Link
             href="/sexstellungen"
             className="text-sm font-medium text-slate-600 hover:text-primary-600"
           >
-            Sexstellungen
+            Entdecken
           </Link>
           <Link
             href="/blog"
