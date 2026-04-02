@@ -163,7 +163,7 @@ export function DashboardHome() {
             <h2 className="mb-6 text-xl font-bold text-slate-900">
               Passt zu deinem Level
             </h2>
-            <PositionGrid positions={newlyUnlocked} />
+            <PositionGrid positions={newlyUnlocked} tierSpotlight />
           </div>
         </section>
       )}

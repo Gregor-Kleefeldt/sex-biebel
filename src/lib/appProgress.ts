@@ -44,3 +44,22 @@ export function xpUntilNextTier(totalXp: number): {
   }
   return { targetLevel: null, xpRemaining: 0 };
 }
+
+/** XP total required so `getUnlockedAppLevel(totalXp)` reaches at least `minLevel`. */
+function xpRequiredForMinAppLevel(minLevel: AppLevel): number {
+  if (minLevel <= 1) return 0;
+  if (minLevel === 2) return XP_THRESHOLD_LEVEL_2;
+  return XP_THRESHOLD_LEVEL_3;
+}
+
+/**
+ * When a position is still locked, returns how much XP is still needed until the
+ * user’s app level reaches `position.level` (same rule as `isPositionUnlockedForUser`).
+ */
+export function getXpRemainingToUnlockPosition(
+  position: Position,
+  totalXp: number,
+): number {
+  const required = xpRequiredForMinAppLevel(position.level);
+  return Math.max(0, required - totalXp);
+}
