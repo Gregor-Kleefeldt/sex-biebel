@@ -21,11 +21,14 @@ export function PositionDetailActions({ position }: { position: Position }) {
 
   return (
     <section
-      className="mb-8 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6"
+      className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:mb-8 sm:p-6"
       aria-label="App-Aktionen"
     >
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        Aktionen
+      </p>
       {!unlocked && (
-        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+        <div className="mb-3 mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 sm:mb-4">
           <p className="font-medium">Noch nicht freigeschaltet</p>
           <p className="mt-1 text-amber-900/90">
             Diese Stellung gehört zu <strong>Level {position.level}</strong>. Dein
@@ -41,7 +44,7 @@ export function PositionDetailActions({ position }: { position: Position }) {
         </div>
       )}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+      <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <button
           type="button"
           onClick={() => toggleFavorite(position.slug)}

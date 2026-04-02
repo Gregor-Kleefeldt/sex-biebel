@@ -51,20 +51,20 @@ export function DashboardOnboarding() {
 
   return (
     <section
-      className="border-b border-primary-100 bg-gradient-to-b from-primary-50/50 to-white"
+      className="border-b border-slate-200 bg-slate-50/60"
       aria-labelledby="onboarding-heading"
     >
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
-        <div className="rounded-2xl border border-primary-200/80 bg-white p-5 shadow-sm sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:py-7">
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h2
                 id="onboarding-heading"
-                className="text-lg font-bold text-slate-900 sm:text-xl"
+                className="text-base font-semibold text-slate-900 sm:text-lg"
               >
                 So funktioniert&apos;s – kurz &amp; einfach
               </h2>
-              <ul className="mt-3 max-w-2xl list-inside list-disc space-y-1.5 text-sm text-slate-600">
+              <ul className="mt-2 max-w-2xl list-inside list-disc space-y-1 text-sm text-slate-600">
                 <li>Stellung öffnen, gemeinsam ausprobieren – alles bleibt auf diesem Gerät.</li>
                 <li>
                   <strong className="font-medium text-slate-700">Erledigt</strong> markieren
@@ -84,20 +84,20 @@ export function DashboardOnboarding() {
             </button>
           </div>
 
-          <div className="mt-6 border-t border-slate-100 pt-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-800">
+          <div className="mt-4 border-t border-slate-100 pt-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               Starte mit 3 einfachen Stellungen
             </h3>
             <p className="mt-1 text-sm text-slate-600">
               Alle drei sind <strong className="font-medium">Level 1</strong> – direkt
               freigeschaltet, gut für den Einstieg.
             </p>
-            <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+            <ul className="mt-3 grid gap-2 sm:grid-cols-3 sm:gap-3">
               {starters.map((p) => (
                 <li key={p.slug}>
                   <Link
                     href={`/sexstellungen/${p.slug}`}
-                    className="flex h-full flex-col rounded-xl border border-slate-200 bg-slate-50/80 p-4 transition hover:border-primary-300 hover:bg-white hover:shadow-md"
+                    className="flex h-full flex-col rounded-lg border border-slate-200 bg-slate-50/80 p-3 transition hover:border-primary-200 hover:bg-white hover:shadow-sm"
                   >
                     <span className="font-semibold text-slate-900">{p.name}</span>
                     <span className="mt-1 line-clamp-2 text-sm text-slate-600">

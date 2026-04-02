@@ -36,7 +36,7 @@ export default function SexstellungenPage() {
         </ol>
       </nav>
 
-      <header className="mb-12">
+      <header className="mb-10">
         <h1 className="mb-4 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
           Entdecken
         </h1>
@@ -46,8 +46,15 @@ export default function SexstellungenPage() {
         </p>
       </header>
 
-      {/* Category hub links */}
-      <div className="mb-6 flex flex-wrap gap-3">
+      <div className="mb-2">
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Themen-Übersichten
+        </p>
+        <p className="mt-1 max-w-2xl text-sm text-slate-600">
+          Kuratierte Sammlungen pro Thema – ergänzend zu den Filtern unten.
+        </p>
+      </div>
+      <div className="mb-8 flex flex-wrap gap-2 sm:gap-3">
         {categoryOrder.map((slug) => (
           <Link
             key={slug}
@@ -63,10 +70,10 @@ export default function SexstellungenPage() {
 
       <details className="mb-12 rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
         <summary className="cursor-pointer text-lg font-semibold text-slate-900">
-          Weitere Themen-Guides (Long-Tail)
+          Vertiefende Themen
         </summary>
         <p className="mt-2 max-w-2xl text-sm text-slate-600">
-          Kuratierte Zusatzseiten – optional, für vertiefende Fragen.
+          Optional: kurze Zusatzseiten für spezielle Fragen und Suchanfragen.
         </p>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {longTailLandingPages.map((page) => (

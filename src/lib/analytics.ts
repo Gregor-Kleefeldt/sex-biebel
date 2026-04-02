@@ -16,7 +16,8 @@ export type AnalyticsFilterType =
   | "category"
   | "difficulty"
   | "level"
-  | "favorites_only";
+  | "favorites_only"
+  | "reset";
 
 /** Known event names for autocomplete and future adapters (PostHog, etc.). */
 export type AnalyticsEventName =

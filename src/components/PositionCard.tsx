@@ -149,11 +149,11 @@ export function PositionCard({ position, tierSpotlight = false }: PositionCardPr
         )}
         {fav && (
           <span
-            className="inline-flex items-center gap-0.5 rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-semibold text-rose-900 shadow-sm sm:text-xs"
+            className="inline-flex items-center justify-center rounded-full bg-rose-100 p-1.5 text-rose-700 shadow-sm"
             title="Favorit"
           >
-            <IconHeart className="h-3.5 w-3.5 text-rose-600" />
-            Favorit
+            <IconHeart className="h-3.5 w-3.5" />
+            <span className="sr-only">Favorit</span>
           </span>
         )}
         {done && (
@@ -194,7 +194,7 @@ export function PositionCard({ position, tierSpotlight = false }: PositionCardPr
           )}
         </div>
         {!unlocked && (
-          <span className="absolute bottom-3 left-1/2 z-10 max-w-[92%] -translate-x-1/2 rounded-full bg-slate-900/88 px-3 py-1.5 text-center text-[11px] font-medium leading-snug text-white shadow-md sm:text-xs">
+          <span className="absolute bottom-2 left-1/2 z-10 max-w-[92%] -translate-x-1/2 rounded-full bg-slate-900/85 px-3 py-1 text-center text-[11px] font-medium leading-snug text-white shadow-md sm:bottom-3 sm:py-1.5 sm:text-xs">
             {lockHint || lockHintFallback}
           </span>
         )}

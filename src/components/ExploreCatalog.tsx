@@ -47,10 +47,39 @@ export function ExploreCatalog({ positions }: ExploreCatalogProps) {
     return list;
   }, [positions, category, difficulty, level, favoritesOnly, favorites]);
 
+  const filtersActive =
+    Boolean(category) ||
+    Boolean(difficulty) ||
+    Boolean(level) ||
+    favoritesOnly;
+
+  const clearFilters = () => {
+    setCategory("");
+    setDifficulty("");
+    setLevel("");
+    setFavoritesOnly(false);
+    trackExploreFilterChanged("reset", "all");
+  };
+
   return (
     <div className="space-y-8">
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-100 pb-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+            Filter
+          </h2>
+          {filtersActive && (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="text-sm font-medium text-primary-700 hover:text-primary-800 hover:underline"
+            >
+              Zurücksetzen
+            </button>
+          )}
+        </div>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className="block text-sm font-medium text-slate-700">
             Kategorie
             <select
@@ -87,6 +116,9 @@ export function ExploreCatalog({ positions }: ExploreCatalogProps) {
               <option value="advanced">Fortgeschritten</option>
             </select>
           </label>
+        </div>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className="block text-sm font-medium text-slate-700">
             Level (Freischaltung)
             <select
@@ -104,7 +136,7 @@ export function ExploreCatalog({ positions }: ExploreCatalogProps) {
               <option value="3">Level 3</option>
             </select>
           </label>
-          <div className="flex flex-col justify-end">
+          <div className="flex flex-col justify-end pb-0.5">
             <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
               <input
                 type="checkbox"

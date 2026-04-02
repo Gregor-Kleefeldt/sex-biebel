@@ -60,6 +60,17 @@ export function DashboardHome() {
       .slice(0, 3);
   }, [unlockedLevel, isUnlocked]);
 
+  const nextStepPosition = useMemo(
+    () =>
+      positions.find((p) => isUnlocked(p) && !isCompleted(p.slug)) ?? null,
+    [isCompleted, isUnlocked],
+  );
+
+  const hasUnlockedAny = useMemo(
+    () => positions.some((p) => isUnlocked(p)),
+    [isUnlocked],
+  );
+
   return (
     <div>
       <section className="relative overflow-hidden border-b border-slate-200 bg-gradient-to-br from-white via-primary-50/30 to-accent-50/30">
@@ -116,6 +127,42 @@ export function DashboardHome() {
                   <>Maximales App-Level erreicht – weiterhin XP sammeln möglich.</>
                 )}
               </p>
+
+              {nextStepPosition ? (
+                <div className="mt-4 border-t border-slate-100 pt-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Als Nächstes
+                  </p>
+                  <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="font-medium text-slate-900">
+                      {nextStepPosition.name}
+                    </p>
+                    <Link
+                      href={`/sexstellungen/${nextStepPosition.slug}`}
+                      className="inline-flex shrink-0 items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+                    >
+                      Öffnen
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-4 border-t border-slate-100 pt-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Als Nächstes
+                  </p>
+                  <p className="mt-2 text-sm text-slate-600">
+                    {hasUnlockedAny
+                      ? "Freigeschaltetes ist erledigt – im Katalog wartet mehr."
+                      : "Sammle XP mit freigeschalteten Stellungen, um neue Ideen zu öffnen."}
+                  </p>
+                  <Link
+                    href="/sexstellungen"
+                    className="mt-2 inline-flex text-sm font-medium text-primary-700 hover:text-primary-800 hover:underline"
+                  >
+                    Zum Katalog
+                  </Link>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col justify-center gap-3">

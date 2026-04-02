@@ -66,27 +66,6 @@ export async function generateMetadata({
   };
 }
 
-// Difficulty badge component (existing difficulty enum)
-function DifficultyBadge({ difficulty }: { difficulty: Position["difficulty"] }) {
-  const styles = {
-    easy: "bg-green-100 text-green-800",
-    medium: "bg-amber-100 text-amber-800",
-    advanced: "bg-rose-100 text-rose-800",
-  };
-  const labels = {
-    easy: "Einfach",
-    medium: "Mittel",
-    advanced: "Fortgeschritten",
-  };
-  return (
-    <span
-      className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${styles[difficulty]}`}
-    >
-      {labels[difficulty]}
-    </span>
-  );
-}
-
 function mapDifficultyToSchwierigkeit(
   difficulty: Position["difficulty"],
 ): Schwierigkeit {
@@ -134,7 +113,7 @@ function EignungChips({ position }: { position: Position }) {
   if (active.length === 0) return null;
 
   return (
-    <div className="mt-4 flex flex-wrap gap-2">
+    <div className="mb-8 mt-1 flex flex-wrap gap-2">
       {active.map((e) => (
         <span
           key={String(e.key)}
@@ -324,7 +303,7 @@ export default async function SexstellungenSlugPage({
             <li>/</li>
             <li>
               <Link href="/sexstellungen" className="hover:text-primary-600">
-                Sexstellungen
+                Entdecken
               </Link>
             </li>
             <li>/</li>
@@ -332,30 +311,29 @@ export default async function SexstellungenSlugPage({
           </ol>
         </nav>
 
-        {/* Illustration placeholder */}
-        <div className="mb-8 flex h-64 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-primary-50 to-accent-50">
-          <div className="flex h-32 w-32 items-center justify-center rounded-full bg-white/80 shadow-inner">
-            <span className="text-6xl text-primary-400" aria-hidden>
+        <PositionOpenedTracker position={position} />
+
+        <div className="mb-6 flex h-44 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-primary-50 to-accent-50 sm:mb-8 sm:h-48">
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white/80 shadow-inner sm:h-28 sm:w-28">
+            <span className="text-5xl text-primary-400 sm:text-6xl" aria-hidden>
               ●
             </span>
           </div>
         </div>
 
-        <PositionOpenedTracker position={position} />
-
-        <header className="mb-8">
+        <header className="mb-4">
           <h1 className="mb-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             {position.name}
           </h1>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             <SchwierigkeitBadge schwierigkeit={schwierigkeit} />
-            <DifficultyBadge difficulty={position.difficulty} />
           </div>
-          <EignungChips position={position} />
-          <p className="mt-4 text-base text-slate-600">{position.shortDescription}</p>
+          <p className="mt-3 text-base text-slate-600">{position.shortDescription}</p>
         </header>
 
         <PositionDetailActions position={position} />
+
+        <EignungChips position={position} />
 
         <div className="prose prose-slate max-w-none">
           <p className="text-lg text-slate-600">{position.description}</p>
@@ -416,11 +394,10 @@ export default async function SexstellungenSlugPage({
         {position.categories.length > 0 && (
           <section className="mt-12 rounded-2xl border border-slate-200 bg-slate-50 p-6">
             <h2 className="text-xl font-semibold text-slate-900">
-              Weitere Stellungen nach Thema
+              Passende Themen
             </h2>
-            <p className="mt-2 text-slate-600">
-              Entdecke passende Alternativen und vertiefende Übersichten zu deinen
-              Interessen.
+            <p className="mt-2 text-sm text-slate-600">
+              Weitere Stellungen und Übersichten nach Interesse.
             </p>
             <ul className="mt-4 flex flex-wrap gap-3">
               {position.categories.map((catSlug) => (
@@ -442,9 +419,12 @@ export default async function SexstellungenSlugPage({
           verwandteAufgeloest.blogartikel.length > 0 ||
           verwandteAufgeloest.challenges.length > 0) && (
           <section className="mt-16 border-t border-slate-200 pt-12">
-            <h2 className="mb-6 text-xl font-semibold text-slate-900">
+            <h2 className="text-xl font-semibold text-slate-900">
               Verwandte Inhalte
             </h2>
+            <p className="mb-6 mt-1 text-sm text-slate-600">
+              Optional – Inspiration jenseits dieser Stellung.
+            </p>
 
             {related.length > 0 && (
               <div>
@@ -482,12 +462,9 @@ export default async function SexstellungenSlugPage({
                           {a.excerpt}
                         </div>
                         {reason && (
-                          <div className="mt-3 text-sm text-slate-600">
-                            <span className="font-medium text-slate-700">
-                              Warum:
-                            </span>{" "}
+                          <p className="mt-2 text-xs leading-relaxed text-slate-500">
                             {reason}
-                          </div>
+                          </p>
                         )}
                       </Link>
                     );
@@ -531,12 +508,9 @@ export default async function SexstellungenSlugPage({
                           {c.duration}
                         </div>
                         {reason && (
-                          <div className="mt-3 text-sm text-slate-600">
-                            <span className="font-medium text-slate-700">
-                              Warum:
-                            </span>{" "}
+                          <p className="mt-2 text-xs leading-relaxed text-slate-500">
                             {reason}
-                          </div>
+                          </p>
                         )}
                       </Link>
                     );
