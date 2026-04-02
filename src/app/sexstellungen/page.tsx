@@ -2,6 +2,17 @@ import Link from "next/link";
 import { PositionGrid } from "@/components/PositionGrid";
 import { positions } from "@/data/positions";
 import { categories } from "@/data/categories";
+import { longTailLandingPages } from "@/data/longTailPages";
+import type { CategorySlug } from "@/types";
+
+const categoryOrder: CategorySlug[] = [
+  "fuer-anfaenger",
+  "wenig-beweglichkeit",
+  "intim",
+  "romantisch",
+  "tiefe-penetration",
+  "fortgeschritten",
+];
 
 export const metadata = {
   title: "Sexstellungen – Alle Stellungen im Überblick",
@@ -35,17 +46,9 @@ export default function SexstellungenPage() {
         </p>
       </header>
 
-      {/* Category Links */}
-      <div className="mb-12 flex flex-wrap gap-3">
-        {(
-          [
-            "fuer-anfaenger",
-            "romantisch",
-            "tiefe-penetration",
-            "intim",
-            "fortgeschritten",
-          ] as const
-        ).map((slug) => (
+      {/* Category hub links */}
+      <div className="mb-6 flex flex-wrap gap-3">
+        {categoryOrder.map((slug) => (
           <Link
             key={slug}
             href={`/sexstellungen/${slug}`}
@@ -55,6 +58,28 @@ export default function SexstellungenPage() {
           </Link>
         ))}
       </div>
+
+      <section className="mb-12 rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
+        <h2 className="text-lg font-semibold text-slate-900">
+          Spezifische Guides (Long-Tail)
+        </h2>
+        <p className="mt-2 max-w-2xl text-sm text-slate-600">
+          Konkrete Fragen – kuratierte Listen mit kurzer Einordnung. Gut für
+          längere Suchphrasen und interne Verlinkung.
+        </p>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {longTailLandingPages.map((page) => (
+            <li key={`${page.categorySlug}-${page.slug}`}>
+              <Link
+                href={`/sexstellungen/${page.categorySlug}/${page.slug}`}
+                className="block rounded-xl border border-slate-200 bg-white p-4 text-sm font-medium text-primary-800 shadow-sm transition hover:border-primary-200 hover:shadow-md"
+              >
+                {page.h1}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {/* All Positions */}
       <PositionGrid positions={positions} />

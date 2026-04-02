@@ -6,12 +6,22 @@ import {
   getPositionBySlug,
   getRelatedPositions,
   getPositionsByCategory,
+  getVerwandteInhalte,
+  getVerwandteInhalteAufgeloest,
+  getBlogArticleBySlug,
+  getChallengeBySlug,
 } from "@/lib/utils";
 import { positions } from "@/data/positions";
 import { categories } from "@/data/categories";
+import { categoryHubExtras } from "@/data/categoryHubContent";
+import {
+  getLongTailsForCategory,
+  getLongTailPage,
+} from "@/data/longTailPages";
 import type { Metadata } from "next";
 import type { Position } from "@/types";
 import type { CategorySlug } from "@/types";
+import type { Schwierigkeit, VerwandterInhalt } from "@/types";
 
 // All valid slugs: positions + categories
 const categorySlugs = Object.keys(categories) as CategorySlug[];
@@ -35,7 +45,7 @@ export async function generateMetadata({
   if (categorySlugs.includes(slug as CategorySlug)) {
     const cat = categories[slug as CategorySlug];
     return {
-      title: `${cat.name} – Sexstellungen`,
+      title: `${cat.name} – Themen-Hub Sexstellungen`,
       description: cat.description,
     };
   }
@@ -54,7 +64,7 @@ export async function generateMetadata({
   };
 }
 
-// Difficulty badge component
+// Difficulty badge component (existing difficulty enum)
 function DifficultyBadge({ difficulty }: { difficulty: Position["difficulty"] }) {
   const styles = {
     easy: "bg-green-100 text-green-800",
@@ -75,6 +85,129 @@ function DifficultyBadge({ difficulty }: { difficulty: Position["difficulty"] })
   );
 }
 
+function mapDifficultyToSchwierigkeit(
+  difficulty: Position["difficulty"],
+): Schwierigkeit {
+  if (difficulty === "easy") return "leicht";
+  if (difficulty === "medium") return "mittel";
+  return "anspruchsvoll";
+}
+
+function SchwierigkeitBadge({
+  schwierigkeit,
+}: {
+  schwierigkeit: Schwierigkeit;
+}) {
+  const styles: Record<Schwierigkeit, string> = {
+    leicht: "bg-green-100 text-green-800",
+    mittel: "bg-amber-100 text-amber-800",
+    anspruchsvoll: "bg-rose-100 text-rose-800",
+  };
+  const labels: Record<Schwierigkeit, string> = {
+    leicht: "Leicht",
+    mittel: "Mittel",
+    anspruchsvoll: "Anspruchsvoll",
+  };
+  return (
+    <span
+      className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${styles[schwierigkeit]}`}
+    >
+      {labels[schwierigkeit]}
+    </span>
+  );
+}
+
+function EignungChips({ position }: { position: Position }) {
+  const eignung = position.eignung ?? {};
+  const entries: Array<{ key: keyof typeof eignung; label: string }> = [
+    { key: "fuerAnfaenger", label: "Für Anfänger" },
+    { key: "fuerPaare", label: "Für Paare" },
+    { key: "wenigBeweglichkeit", label: "Wenig Beweglichkeit" },
+    { key: "intim", label: "Intim" },
+    { key: "romantisch", label: "Romantisch" },
+    { key: "experimentell", label: "Experimentell" },
+  ];
+
+  const active = entries.filter((e) => eignung[e.key]);
+  if (active.length === 0) return null;
+
+  return (
+    <div className="mt-4 flex flex-wrap gap-2">
+      {active.map((e) => (
+        <span
+          key={String(e.key)}
+          className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700"
+        >
+          {e.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function SafetyBox({ position }: { position: Position }) {
+  const s = position.sicherheit;
+  const hinweise = s?.hinweise ?? [];
+  const vermeidenWenn = s?.vermeidenWenn ?? [];
+  const tipps = s?.tipps ?? [];
+
+  if (hinweise.length === 0 && vermeidenWenn.length === 0 && tipps.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="mt-12 rounded-2xl border border-slate-200 bg-slate-50 p-6">
+      <h2 className="text-xl font-semibold text-slate-900">Sicherheit & Komfort</h2>
+      <div className="mt-4 grid gap-6 sm:grid-cols-3">
+        {hinweise.length > 0 && (
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-700">
+              Hinweise
+            </h3>
+            <ul className="mt-2 space-y-2 text-sm text-slate-700">
+              {hinweise.map((t, i) => (
+                <li key={i}>{t}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {vermeidenWenn.length > 0 && (
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-700">
+              Vermeiden wenn
+            </h3>
+            <ul className="mt-2 space-y-2 text-sm text-slate-700">
+              {vermeidenWenn.map((t, i) => (
+                <li key={i}>{t}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {tipps.length > 0 && (
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-700">
+              Tipps
+            </h3>
+            <ul className="mt-2 space-y-2 text-sm text-slate-700">
+              {tipps.map((t, i) => (
+                <li key={i}>{t}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function getVerwandterInhaltReason(
+  items: VerwandterInhalt[],
+  type: VerwandterInhalt["type"],
+  slug: string,
+): string | undefined {
+  return items.find((i) => i.type === type && i.slug === slug)?.reason;
+}
+
 export default async function SexstellungenSlugPage({
   params,
 }: {
@@ -84,14 +217,70 @@ export default async function SexstellungenSlugPage({
 
   // Render category page if slug is a category
   if (categorySlugs.includes(slug as CategorySlug)) {
-    const categoryPositions = getPositionsByCategory(slug as CategorySlug);
-    const cat = categories[slug as CategorySlug];
+    const categorySlug = slug as CategorySlug;
+    const categoryPositions = getPositionsByCategory(categorySlug);
+    const cat = categories[categorySlug];
+    const extras = categoryHubExtras[categorySlug];
+    const longTails = getLongTailsForCategory(categorySlug);
+    const longTailPages = longTails.map((lt) => ({
+      href: `/sexstellungen/${lt.categorySlug}/${lt.slug}`,
+      title: lt.h1,
+      description:
+        lt.metaDescription.length > 155
+          ? `${lt.metaDescription.slice(0, 152)}…`
+          : lt.metaDescription,
+    }));
+    const crossAnfaengerWenig = getLongTailPage(
+      "fuer-anfaenger",
+      "wenig-beweglichkeit",
+    );
+    if (
+      categorySlug === "wenig-beweglichkeit" &&
+      crossAnfaengerWenig &&
+      !longTailPages.some((l) => l.href.endsWith("/wenig-beweglichkeit"))
+    ) {
+      longTailPages.push({
+        href: `/sexstellungen/fuer-anfaenger/wenig-beweglichkeit`,
+        title: crossAnfaengerWenig.h1,
+        description:
+          crossAnfaengerWenig.metaDescription.length > 155
+            ? `${crossAnfaengerWenig.metaDescription.slice(0, 152)}…`
+            : crossAnfaengerWenig.metaDescription,
+      });
+    }
+    const relatedBlog = extras.blogSlugs
+      .map((s) => {
+        const a = getBlogArticleBySlug(s);
+        if (!a) return null;
+        return {
+          href: `/blog/${a.slug}`,
+          title: a.title,
+          description: a.excerpt,
+        };
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null);
+    const relatedChallenges = extras.challengeSlugs
+      .map((s) => {
+        const c = getChallengeBySlug(s);
+        if (!c) return null;
+        return {
+          href: `/challenge/${c.slug}`,
+          title: c.title,
+          description: c.description,
+          meta: `Dauer: ${c.duration}`,
+        };
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null);
+
     return (
       <CategoryPage
-        categorySlug={slug as CategorySlug}
         categoryName={cat.name}
         categoryDescription={cat.description}
         positions={categoryPositions}
+        hubSections={extras.sections}
+        longTailPages={longTailPages}
+        relatedBlog={relatedBlog}
+        relatedChallenges={relatedChallenges}
       />
     );
   }
@@ -101,6 +290,10 @@ export default async function SexstellungenSlugPage({
   if (!position) notFound();
 
   const related = getRelatedPositions(position);
+  const verwandteInhalte = getVerwandteInhalte(position);
+  const verwandteAufgeloest = getVerwandteInhalteAufgeloest(position);
+  const schwierigkeit =
+    position.schwierigkeit ?? mapDifficultyToSchwierigkeit(position.difficulty);
 
   // JSON-LD structured data for SEO
   const jsonLd = {
@@ -150,7 +343,11 @@ export default async function SexstellungenSlugPage({
           <h1 className="mb-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             {position.name}
           </h1>
-          <DifficultyBadge difficulty={position.difficulty} />
+          <div className="flex flex-wrap items-center gap-3">
+            <SchwierigkeitBadge schwierigkeit={schwierigkeit} />
+            <DifficultyBadge difficulty={position.difficulty} />
+          </div>
+          <EignungChips position={position} />
         </header>
 
         <div className="prose prose-slate max-w-none">
@@ -168,24 +365,178 @@ export default async function SexstellungenSlugPage({
           <h2 className="mt-10 text-xl font-semibold text-slate-900">
             Variationen
           </h2>
-          <ul className="mt-3 space-y-2 text-slate-600">
-            {position.variations.map((v, i) => (
-              <li key={i}>{v}</li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Related Positions */}
-        {related.length > 0 && (
-          <section className="mt-16 border-t border-slate-200 pt-12">
-            <h2 className="mb-6 text-xl font-semibold text-slate-900">
-              Ähnliche Sexstellungen
-            </h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((p) => (
-                <PositionCard key={p.slug} position={p} />
+          {position.varianten && position.varianten.length > 0 ? (
+            <div className="not-prose mt-4 grid gap-4 sm:grid-cols-2">
+              {position.varianten.map((v) => (
+                <Link
+                  key={v.slug}
+                  href={`/sexstellungen/${v.slug}`}
+                  className="rounded-2xl border border-slate-200 bg-white p-4 no-underline shadow-sm transition hover:border-primary-200 hover:shadow-md"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-semibold text-slate-900">{v.name}</div>
+                      <div className="mt-1 text-sm text-slate-600">
+                        {v.kurzeBeschreibung}
+                      </div>
+                    </div>
+                    <span className="text-sm font-medium text-primary-700">
+                      Öffnen
+                    </span>
+                  </div>
+                  {v.unterschiedZurBasisposition && (
+                    <div className="mt-3 text-sm text-slate-600">
+                      <span className="font-medium text-slate-700">
+                        Unterschied:
+                      </span>{" "}
+                      {v.unterschiedZurBasisposition}
+                    </div>
+                  )}
+                </Link>
               ))}
             </div>
+          ) : (
+            <ul className="mt-3 space-y-2 text-slate-600">
+              {position.variations.map((v, i) => (
+                <li key={i}>{v}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <SafetyBox position={position} />
+
+        {position.categories.length > 0 && (
+          <section className="mt-12 rounded-2xl border border-slate-200 bg-slate-50 p-6">
+            <h2 className="text-xl font-semibold text-slate-900">
+              Weitere Stellungen nach Thema
+            </h2>
+            <p className="mt-2 text-slate-600">
+              Entdecke passende Alternativen und vertiefende Übersichten zu deinen
+              Interessen.
+            </p>
+            <ul className="mt-4 flex flex-wrap gap-3">
+              {position.categories.map((catSlug) => (
+                <li key={catSlug}>
+                  <Link
+                    href={`/sexstellungen/${catSlug}`}
+                    className="inline-block rounded-full bg-white px-4 py-2 text-sm font-medium text-primary-700 shadow-sm ring-1 ring-slate-200 transition hover:ring-primary-300"
+                  >
+                    Weitere Stellungen: {categories[catSlug].name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* Related Positions */}
+        {(related.length > 0 ||
+          verwandteAufgeloest.blogartikel.length > 0 ||
+          verwandteAufgeloest.challenges.length > 0) && (
+          <section className="mt-16 border-t border-slate-200 pt-12">
+            <h2 className="mb-6 text-xl font-semibold text-slate-900">
+              Verwandte Inhalte
+            </h2>
+
+            {related.length > 0 && (
+              <div>
+                <h3 className="mb-4 text-lg font-semibold text-slate-900">
+                  Ähnliche Sexstellungen
+                </h3>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {related.map((p) => (
+                    <PositionCard key={p.slug} position={p} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {verwandteAufgeloest.blogartikel.length > 0 && (
+              <div className={related.length > 0 ? "mt-12" : undefined}>
+                <h3 className="mb-4 text-lg font-semibold text-slate-900">
+                  Passende Blogartikel
+                </h3>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {verwandteAufgeloest.blogartikel.map((a) => {
+                    const reason = getVerwandterInhaltReason(
+                      verwandteInhalte,
+                      "blog",
+                      a.slug,
+                    );
+                    return (
+                      <Link
+                        key={a.slug}
+                        href={`/blog/${a.slug}`}
+                        className="rounded-2xl border border-slate-200 bg-white p-4 no-underline shadow-sm transition hover:border-primary-200 hover:shadow-md"
+                      >
+                        <div className="font-semibold text-slate-900">{a.title}</div>
+                        <div className="mt-1 text-sm text-slate-600">
+                          {a.excerpt}
+                        </div>
+                        {reason && (
+                          <div className="mt-3 text-sm text-slate-600">
+                            <span className="font-medium text-slate-700">
+                              Warum:
+                            </span>{" "}
+                            {reason}
+                          </div>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {verwandteAufgeloest.challenges.length > 0 && (
+              <div
+                className={
+                  related.length > 0 || verwandteAufgeloest.blogartikel.length > 0
+                    ? "mt-12"
+                    : undefined
+                }
+              >
+                <h3 className="mb-4 text-lg font-semibold text-slate-900">
+                  Passende Challenges
+                </h3>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {verwandteAufgeloest.challenges.map((c) => {
+                    const reason = getVerwandterInhaltReason(
+                      verwandteInhalte,
+                      "challenge",
+                      c.slug,
+                    );
+                    return (
+                      <Link
+                        key={c.slug}
+                        href={`/challenge/${c.slug}`}
+                        className="rounded-2xl border border-slate-200 bg-white p-4 no-underline shadow-sm transition hover:border-primary-200 hover:shadow-md"
+                      >
+                        <div className="font-semibold text-slate-900">{c.title}</div>
+                        <div className="mt-1 text-sm text-slate-600">
+                          {c.description}
+                        </div>
+                        <div className="mt-2 text-sm text-slate-600">
+                          <span className="font-medium text-slate-700">
+                            Dauer:
+                          </span>{" "}
+                          {c.duration}
+                        </div>
+                        {reason && (
+                          <div className="mt-3 text-sm text-slate-600">
+                            <span className="font-medium text-slate-700">
+                              Warum:
+                            </span>{" "}
+                            {reason}
+                          </div>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </section>
         )}
       </article>

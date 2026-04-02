@@ -30,4 +30,9 @@ export const categories: Record<
     description:
       "Anspruchsvollere Stellungen, die etwas Übung oder Flexibilität erfordern.",
   },
+  "wenig-beweglichkeit": {
+    name: "Wenig Beweglichkeit",
+    description:
+      "Sanfte, gelenkschonende Stellungen – ideal bei wenig Beweglichkeit, für entspannten Sex ohne Akrobatik.",
+  },
 };

@@ -3,6 +3,7 @@ import { positions } from "@/data/positions";
 import { blogArticles } from "@/data/blog";
 import { challenges } from "@/data/challenges";
 import { categories } from "@/data/categories";
+import { longTailLandingPages } from "@/data/longTailPages";
 
 // Base URL - replace with your actual domain in production
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sex-bibel.example.com";
@@ -49,6 +50,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  const longTailPages: MetadataRoute.Sitemap = longTailLandingPages.map(
+    (page) => ({
+      url: `${baseUrl}/sexstellungen/${page.categorySlug}/${page.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.75,
+    }),
+  );
+
   // Position pages
   const positionPages: MetadataRoute.Sitemap = positionSlugs.map((slug) => ({
     url: `${baseUrl}/sexstellungen/${slug}`,
@@ -79,6 +89,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...staticPages,
     ...categoryPages,
+    ...longTailPages,
     ...positionPages,
     ...blogPages,
     ...challengePages,
