@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
+import { DashboardOnboarding } from "@/components/DashboardOnboarding";
 import { PositionGrid } from "@/components/PositionGrid";
 import { useAppProgress } from "@/context/AppProgressProvider";
 import {
@@ -134,6 +135,8 @@ export function DashboardHome() {
           </div>
         </div>
       </section>
+
+      <DashboardOnboarding />
 
       <section className="mx-auto max-w-6xl px-4 py-12">
         <h2 className="mb-4 text-xl font-bold text-slate-900">
