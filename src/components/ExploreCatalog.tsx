@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { PositionGrid } from "@/components/PositionGrid";
 import { useAppProgress } from "@/context/AppProgressProvider";
+import { trackExploreFilterChanged } from "@/lib/analytics";
 import { categories } from "@/data/categories";
 import type { Position } from "@/types";
 import type { CategorySlug } from "@/types";
@@ -54,9 +55,11 @@ export function ExploreCatalog({ positions }: ExploreCatalogProps) {
             Kategorie
             <select
               value={category}
-              onChange={(e) =>
-                setCategory((e.target.value || "") as "" | CategorySlug)
-              }
+              onChange={(e) => {
+                const v = (e.target.value || "") as "" | CategorySlug;
+                setCategory(v);
+                trackExploreFilterChanged("category", v || "all");
+              }}
               className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
             >
               <option value="">Alle</option>
@@ -71,9 +74,11 @@ export function ExploreCatalog({ positions }: ExploreCatalogProps) {
             Schwierigkeit
             <select
               value={difficulty}
-              onChange={(e) =>
-                setDifficulty((e.target.value || "") as "" | Difficulty)
-              }
+              onChange={(e) => {
+                const v = (e.target.value || "") as "" | Difficulty;
+                setDifficulty(v);
+                trackExploreFilterChanged("difficulty", v || "all");
+              }}
               className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
             >
               <option value="">Alle</option>
@@ -86,9 +91,11 @@ export function ExploreCatalog({ positions }: ExploreCatalogProps) {
             Level (Freischaltung)
             <select
               value={level}
-              onChange={(e) =>
-                setLevel((e.target.value || "") as "" | "1" | "2" | "3")
-              }
+              onChange={(e) => {
+                const v = (e.target.value || "") as "" | "1" | "2" | "3";
+                setLevel(v);
+                trackExploreFilterChanged("level", v || "all");
+              }}
               className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
             >
               <option value="">Alle</option>
@@ -102,7 +109,11 @@ export function ExploreCatalog({ positions }: ExploreCatalogProps) {
               <input
                 type="checkbox"
                 checked={favoritesOnly}
-                onChange={(e) => setFavoritesOnly(e.target.checked)}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setFavoritesOnly(checked);
+                  trackExploreFilterChanged("favorites_only", checked);
+                }}
                 className="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
               />
               Nur Favoriten

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PositionCard } from "@/components/PositionCard";
 import { PositionDetailActions } from "@/components/PositionDetailActions";
+import { PositionOpenedTracker } from "@/components/PositionOpenedTracker";
 import { CategoryPage } from "@/components/CategoryPage";
 import {
   getPositionBySlug,
@@ -339,6 +340,8 @@ export default async function SexstellungenSlugPage({
             </span>
           </div>
         </div>
+
+        <PositionOpenedTracker position={position} />
 
         <header className="mb-8">
           <h1 className="mb-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">

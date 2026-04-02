@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useAppProgress } from "@/context/AppProgressProvider";
+import { getAnalyticsSessionId, trackEvent } from "@/lib/analytics";
 import { ONBOARDING_STARTER_SLUGS } from "@/data/onboardingStarters";
 import { getPositionBySlug } from "@/lib/utils";
 import type { Position } from "@/types";
@@ -34,6 +35,18 @@ export function DashboardOnboarding() {
     totalXp === 0 &&
     starters.length > 0;
 
+  useEffect(() => {
+    if (!hydrated || !show) return;
+    const sid = getAnalyticsSessionId();
+    trackEvent("onboarding_started", sid ? { session_id: sid } : {});
+  }, [hydrated, show]);
+
+  const onDismiss = useCallback(() => {
+    const sid = getAnalyticsSessionId();
+    trackEvent("onboarding_dismissed", sid ? { session_id: sid } : {});
+    dismissOnboarding();
+  }, [dismissOnboarding]);
+
   if (!show) return null;
 
   return (
@@ -64,7 +77,7 @@ export function DashboardOnboarding() {
             </div>
             <button
               type="button"
-              onClick={dismissOnboarding}
+              onClick={onDismiss}
               className="shrink-0 self-start rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
             >
               Verstanden, ausblenden

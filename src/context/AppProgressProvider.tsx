@@ -6,15 +6,24 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import type { AppLevel, Position } from "@/types";
+import {
+  getAnalyticsSessionId,
+  maybeTrackXpMilestones,
+  positionAnalyticsFields,
+  trackEvent,
+  trackUnlockAchieved,
+} from "@/lib/analytics";
 import {
   computeTotalXp,
   getUnlockedAppLevel,
   isPositionUnlockedForUser,
   xpUntilNextTier,
 } from "@/lib/appProgress";
+import { getPositionBySlug } from "@/lib/utils";
 
 export const APP_STORAGE_KEY = "sex-bibel-app-v1";
 
@@ -92,6 +101,9 @@ export function AppProgressProvider({
   const [completed, setCompleted] = useState<string[]>([]);
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
 
+  const prevXpRef = useRef<number | null>(null);
+  const prevUnlockedLevelRef = useRef<AppLevel | null>(null);
+
   useEffect(() => {
     const s = readPersisted();
     setFavorites(s.favorites);
@@ -141,16 +153,62 @@ export function AppProgressProvider({
 
   const nextTier = useMemo(() => xpUntilNextTier(totalXp), [totalXp]);
 
+  useEffect(() => {
+    if (!hydrated) return;
+    const prev = prevXpRef.current;
+    prevXpRef.current = totalXp;
+    if (prev !== null) {
+      maybeTrackXpMilestones(prev, totalXp);
+    }
+  }, [hydrated, totalXp]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const prev = prevUnlockedLevelRef.current;
+    if (prev !== null && unlockedLevel > prev) {
+      trackUnlockAchieved(prev, unlockedLevel, totalXp);
+    }
+    prevUnlockedLevelRef.current = unlockedLevel;
+  }, [hydrated, unlockedLevel, totalXp]);
+
   const toggleFavorite = useCallback((slug: string) => {
-    setFavorites((prev) =>
-      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
-    );
+    setFavorites((prev) => {
+      const wasFavorite = prev.includes(slug);
+      const pos = getPositionBySlug(slug);
+      if (pos) {
+        if (wasFavorite) {
+          trackEvent("favorite_removed", positionAnalyticsFields(pos));
+        } else {
+          trackEvent("favorite_added", positionAnalyticsFields(pos));
+        }
+      }
+      return wasFavorite
+        ? prev.filter((s) => s !== slug)
+        : [...prev, slug];
+    });
   }, []);
 
   const toggleCompleted = useCallback((slug: string) => {
-    setCompleted((prev) =>
-      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
-    );
+    setCompleted((prev) => {
+      const wasCompleted = prev.includes(slug);
+      const pos = getPositionBySlug(slug);
+      if (!wasCompleted && pos) {
+        trackEvent("position_completed", {
+          ...positionAnalyticsFields(pos),
+          xp_reward: pos.xpReward,
+        });
+        if (prev.length === 0) {
+          const sid = getAnalyticsSessionId();
+          trackEvent("onboarding_completed", {
+            slug: pos.slug,
+            ...(sid ? { session_id: sid } : {}),
+          });
+        }
+      }
+      return wasCompleted
+        ? prev.filter((s) => s !== slug)
+        : [...prev, slug];
+    });
   }, []);
 
   const dismissOnboarding = useCallback(() => {

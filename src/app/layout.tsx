@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AnalyticsBootstrap } from "@/components/AnalyticsBootstrap";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AppProgressProvider } from "@/context/AppProgressProvider";
@@ -27,6 +28,7 @@ export default function RootLayout({
     <html lang="de">
       <body className="min-h-screen bg-slate-50 font-sans antialiased">
         <AppProgressProvider>
+          <AnalyticsBootstrap />
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
